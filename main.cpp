@@ -1,6 +1,8 @@
 #include "Canvas.h"
 #include <math.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
 unsigned int width = 512;
@@ -37,23 +39,19 @@ mat4 perspective_matrix;
 mat4 camera_matrix;
 mat4 final_matrix;
 
+//glm::mat4 mvp;
+
 
 //vertext shader is in chanrge of moving points
 //fragment shader - pixel color
 
-/*Vector4f p = final_matrix*points[i];
-Vector4f q = final_matrix*points[i+1];
-canvas.AddLine(p[0]/p[2], p[1]/p[2], q[0]/q[2], q[1]/q[2]);
-gl_Position = final_matrix*vec4(vpoint, 1); */
-
 const char * vshader_square = """\
 #version 330 core \n\
+      uniform mat4 mvp;\
       in vec3 vpoint; \
-      in mat4 final_matrix;\
       \
       void main() {\
-        vec4 temp =final_matrix*vec4(vpoint, 1);\
-        gl_Position = vec4(temp[0]/temp[2], temp[1]/temp[2], 0, 1);\
+        gl_Position =  mvp*vec4(vpoint,1);\
       }""";
 
       const char * fshader_square = "\
@@ -103,6 +101,9 @@ const char * vshader_square = """\
   0.5, 0.5, 0.5,
   -0.5, 0.5, 0.5,
   0.5,-0.5, 0.5
+       /* -1.0f, -1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         0.0f,  1.0f, 0.0f,*/
 };
 
 float Rotation =0;
@@ -111,6 +112,7 @@ float RotationSpeed = 0.02;
 GLuint VertexArrayID = 0;
 GLuint ProgramID = 0;
 GLuint RotBindingID = 0;
+GLuint MatrixID = 0;
 
 void InitializeGL()
 {
@@ -129,8 +131,10 @@ void InitializeGL()
 
   GLuint vpoint_id = glGetAttribLocation(ProgramID, "vpoint");
   glEnableVertexAttribArray(vpoint_id);
-  // GlBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+  //GlBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glVertexAttribPointer(vpoint_id,3, GL_FLOAT, false, 0,0);
+  MatrixID = glGetUniformLocation(ProgramID, "mvp");   ///////added
+
 
   RotBindingID = glGetUniformLocation(ProgramID, "rotation");
 
@@ -153,111 +157,49 @@ void KeyPress(char keychar)
 
 void OnPaint()
 {
+
   glClear(GL_COLOR_BUFFER_BIT);
   //contex
   glUseProgram(ProgramID);
   glBindVertexArray(VertexArrayID);
 
+/*
+  //glm::mat4 ViewMatrix = glm::translate(-3.0f, 0.0f ,0.0f);
+  //mat4 ViewMatrix = mat4 MVPmatrix = projection * view * model;(-3.0f, 0.0f ,0.0f);
+  mat4 CameraMatrix = glm::lookAt(
+       camera, // the position of your camera, in world space
+       center,   // where you want to look at, in world space
+       up_vector        // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
+  );
 
-  //compute perspective_matrixspective=Morth*perspective_matrix
-  /*perspective_matrix <<
-    2*n/(r-l), 0, (l+r)/(l-r), 0,
-    0, 2*n/(t-b), (b+t)/(b-t), 0,
-    0, 0, (n+f)/(n-f), 2*f*n/(f-n),
-    0, 0, 1, 0;*/
+  mat4 projectionMatrix = glm::perspective(
+       horizontal_angle,         // The horizontal Field of View, in degrees : the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
+       4.0f / 3.0f, // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar ?
+       0.1f,        // Near clipping plane. Keep as big as possible, or you'll get precision issues.
+       100.0f       // Far clipping plane. Keep as little as possible.
+   );
 
-  perspective_matrix[0][0] = 2*n/(r-l);
-  perspective_matrix[0][1] = 0;
-  perspective_matrix[0][2] = (l+r)/(l-r);
-  perspective_matrix[0][3] = 0;
-  perspective_matrix[1][0] = 0;
-  perspective_matrix[1][1] = 2*n/(t-b);
-  perspective_matrix[1][2] = (b+t)/(b-t);
-  perspective_matrix[1][3] = 0;
-  perspective_matrix[2][0] = 0;
-  perspective_matrix[2][1] = 0;
-  perspective_matrix[2][2] = (n+f)/(n-f);
-  perspective_matrix[2][3] = 2*f*n/(f-n);
-  perspective_matrix[3][0] = 0;
-  perspective_matrix[3][1] = 0;
-  perspective_matrix[3][2] = 1;
-  perspective_matrix[3][3] = 0;
-
-  //compute Mcamera
-  vec3 new_camera (
-      radius*sin(horizontal_angle)*cos(vertical_angle),
-      radius*sin(horizontal_angle)*sin(vertical_angle),
-      radius*cos(horizontal_angle));
-  camera = new_camera;
-
-  vec3 gaze_dir= center - camera; //center-eye_pos
-
-  //update radius
-  radius = length(gaze_dir);
-  vec3 w = -(gaze_dir/length(gaze_dir));
-  vec3 u = cross(up_vector, w)/length(cross(up_vector, w));
-  vec3 v = cross(w, u);
-
-  mat4 MV;
- /* MV <<
-    u[0], u[1], u[2], 0,
-    v[0], v[1], v[2], 0,
-    w[0], w[1], w[2], 0,
-    0, 0, 0, 1;*/
-
-  MV[0][0] = u[0];
-  MV[0][1] = u[1];
-  MV[0][2] = u[2];
-  MV[0][3] = 0;
-  MV[1][0] = v[0];
-  MV[1][1] = v[1];
-  MV[1][2] = v[2];
-  MV[1][3] = 0;
-  MV[2][0] = w[0];
-  MV[2][1] = w[1];
-  MV[2][2] = w[2];
-  MV[2][3] = 0;
-  MV[3][0] = 0;
-  MV[3][1] = 0;
-  MV[3][2] = 0;
-  MV[3][3] = 1;
-
-  mat4 temp;
- /* temp <<
-    1, 0, 0, -camera[0],
-    0, 1, 0, -camera[1],
-    0, 0, 1, -camera[2],
-    0, 0, 0, 1;*/
-
-  temp[0][0] = 1;
-  temp[0][1] = 0;
-  temp[0][2] = 0;
-  temp[0][3] = -camera[0];
-  temp[1][0] = 0;
-  temp[1][1] = 1;
-  temp[1][2] = 0;
-  temp[1][3] = -camera[1];
-  temp[2][0] = 0;
-  temp[2][1] = 0;
-  temp[2][2] = 1;
-  temp[2][3] = -camera[2];
-  temp[3][0] = 0;
-  temp[3][1] = 0;
-  temp[3][2] = 0;
-  temp[3][3] = 1;
-
-    camera_matrix = MV*temp;
-    final_matrix= perspective_matrix*camera_matrix;
+  //mat4 MVPmatrix = projection * view * model;*/
 
 
 
+  glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) width / (float)height, 0.1f, 100.0f);
+  glm::mat4 View = glm::lookAt(
+                  glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
+                  glm::vec3(0,0,0), // and looks at the origin
+                  glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+                  );
+  glm::mat4 Model = glm::mat4(1.0f);
+  glm::mat4 mvp = Projection * View * Model;
+  glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
-    glUniform1f(RotBindingID, Rotation);
+  glUniform1f(RotBindingID, Rotation);
     //draw
-    glDrawArrays(GL_TRIANGLES, 0, 45);
-    //clean up
-    glUseProgram(0);
-    glBindVertexArray(0);
+     glDrawArrays(GL_TRIANGLES, 0, 45);
+     //clean up
+     glUseProgram(0);
+     glBindVertexArray(0);
+
 
 }
 
@@ -268,6 +210,7 @@ void OnTimer()
 }
 
 int main(int, char **){
+
   //Link the call backs
   canvas.SetMouseMove(MouseMove);
   canvas.SetMouseButton(MouseButton);
