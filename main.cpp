@@ -147,11 +147,6 @@ void MouseButton(MouseButtons mouseButton, bool press)
 
 }
 
-void KeyPress(char keychar)
-{
-
-}
-
 void OnPaint()
 {
   glClear(GL_COLOR_BUFFER_BIT);
@@ -166,14 +161,14 @@ void OnPaint()
       radius*cos(horizontal_angle));
   camera = new_camera;
 
-  glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) width / (float)height, 0.1f, 100.0f);
-  glm::mat4 View = glm::lookAt(
+  mat4 Projection = perspective(glm::radians(45.0f), (float) width / (float)height, 0.1f, 100.0f);
+  mat4 View = lookAt(
       camera, // Camera is at (4,3,3), in World Space
       center, // and looks at the origin
       up_vector  // Head is up (set to 0,-1,0 to look upside-down)
       );
-  glm::mat4 Model = glm::mat4(1.0f);
-  glm::mat4 mvp = Projection * View * Model;
+  mat4 Model = mat4(1.0f);
+  mat4 mvp = Projection * View * Model;
   glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
   //draw
@@ -183,20 +178,13 @@ void OnPaint()
   glBindVertexArray(0);
 }
 
-void OnTimer()
-{
-  ///Rotation+=RotationSpeed;
-
-}
 
 int main(int, char **){
 
   //Link the call backs
   canvas.SetMouseMove(MouseMove);
   canvas.SetMouseButton(MouseButton);
-  canvas.SetKeyPress(KeyPress);
   canvas.SetOnPaint(OnPaint);
-  canvas.SetTimer(0.05, OnTimer);
   //Show Window
   canvas.Initialize(width, height, "OpenGL Intro Demo");
   //Do our initialization
