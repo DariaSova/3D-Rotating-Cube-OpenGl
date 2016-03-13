@@ -24,24 +24,6 @@ vec3 camera;
 vec3 center(0, 0, 0);
 vec3 up_vector(0, 1, 0);
 
-//visible area on the screen
-float n = -1.0f;
-float f = -10.0f;
-float r = 1.0f;
-float t = 1.0f;
-float b = -1.0f;
-float l = -1.0f;
-
-float scale = 1.0f;
-
-std::vector<vec4> points;
-mat4 perspective_matrix;
-mat4 camera_matrix;
-mat4 final_matrix;
-
-//glm::mat4 mvp;
-
-
 //vertext shader is in chanrge of moving points
 //fragment shader - pixel color
 
@@ -58,10 +40,6 @@ const char * vshader_square = """\
 #version 330 core \n\
       out vec3 color;\
       void main() {color = vec3(1,0,0); }";
-
-      //front
-
-
 
       const GLfloat vpoint [] =
 {
@@ -101,13 +79,7 @@ const char * vshader_square = """\
   0.5, 0.5, 0.5,
   -0.5, 0.5, 0.5,
   0.5,-0.5, 0.5
-       /* -1.0f, -1.0f, 0.0f,
-         1.0f, -1.0f, 0.0f,
-         0.0f,  1.0f, 0.0f,*/
 };
-
-float Rotation =0;
-float RotationSpeed = 0.02;
 
 GLuint VertexArrayID = 0;
 GLuint ProgramID = 0;
@@ -128,25 +100,50 @@ void InitializeGL()
 
   ProgramID = compile_shaders(vshader_square, fshader_square);
   glUseProgram(ProgramID);
-
   GLuint vpoint_id = glGetAttribLocation(ProgramID, "vpoint");
   glEnableVertexAttribArray(vpoint_id);
   //GlBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
   glVertexAttribPointer(vpoint_id,3, GL_FLOAT, false, 0,0);
-  MatrixID = glGetUniformLocation(ProgramID, "mvp");   ///////added
-
-
+  MatrixID = glGetUniformLocation(ProgramID, "mvp");
   RotBindingID = glGetUniformLocation(ProgramID, "rotation");
 
 }
 
 void MouseMove(double x, double y)
 {
+    if (leftButtonPressed == true) {
+      //check in which direction the mouse is moving
+      float x_diff = x-mouse_pos_x;
+      float y_diff = y-mouse_pos_y;
+
+      horizontal_angle += mouse_speed * x_diff;
+      vertical_angle += mouse_speed * y_diff;
+    }
+    else if (rightButtonPressed == true) {
+      float y_diff = y-mouse_pos_y;
+      radius += y_diff*mouse_speed;
+    }
+
+    //update current mouse position
+    mouse_pos_x = x;
+    mouse_pos_y = y;
 
 }
 
 void MouseButton(MouseButtons mouseButton, bool press)
 {
+    //check for the left button
+    if (mouseButton == LeftButton)
+    {
+      if (press == true) leftButtonPressed = true;
+      else leftButtonPressed = false;
+    }
+    //check for right button
+    if (mouseButton == RightButton)
+    {
+      if (press == true) rightButtonPressed = true;
+      else rightButtonPressed = false;
+    }
 
 }
 
@@ -157,50 +154,33 @@ void KeyPress(char keychar)
 
 void OnPaint()
 {
-
   glClear(GL_COLOR_BUFFER_BIT);
   //contex
   glUseProgram(ProgramID);
   glBindVertexArray(VertexArrayID);
 
-/*
-  //glm::mat4 ViewMatrix = glm::translate(-3.0f, 0.0f ,0.0f);
-  //mat4 ViewMatrix = mat4 MVPmatrix = projection * view * model;(-3.0f, 0.0f ,0.0f);
-  mat4 CameraMatrix = glm::lookAt(
-       camera, // the position of your camera, in world space
-       center,   // where you want to look at, in world space
-       up_vector        // probably glm::vec3(0,1,0), but (0,-1,0) would make you looking upside-down, which can be great too
-  );
-
-  mat4 projectionMatrix = glm::perspective(
-       horizontal_angle,         // The horizontal Field of View, in degrees : the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
-       4.0f / 3.0f, // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar ?
-       0.1f,        // Near clipping plane. Keep as big as possible, or you'll get precision issues.
-       100.0f       // Far clipping plane. Keep as little as possible.
-   );
-
-  //mat4 MVPmatrix = projection * view * model;*/
-
-
+  //compute Mcamera
+  vec3 new_camera (
+      radius*sin(horizontal_angle)*cos(vertical_angle),
+      radius*sin(horizontal_angle)*sin(vertical_angle),
+      radius*cos(horizontal_angle));
+  camera = new_camera;
 
   glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) width / (float)height, 0.1f, 100.0f);
   glm::mat4 View = glm::lookAt(
-                  glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
-                  glm::vec3(0,0,0), // and looks at the origin
-                  glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-                  );
+      camera, // Camera is at (4,3,3), in World Space
+      center, // and looks at the origin
+      up_vector  // Head is up (set to 0,-1,0 to look upside-down)
+      );
   glm::mat4 Model = glm::mat4(1.0f);
   glm::mat4 mvp = Projection * View * Model;
   glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
-  glUniform1f(RotBindingID, Rotation);
-    //draw
-     glDrawArrays(GL_TRIANGLES, 0, 45);
-     //clean up
-     glUseProgram(0);
-     glBindVertexArray(0);
-
-
+  //draw
+  glDrawArrays(GL_TRIANGLES, 0, 45);
+  //clean up
+  glUseProgram(0);
+  glBindVertexArray(0);
 }
 
 void OnTimer()
