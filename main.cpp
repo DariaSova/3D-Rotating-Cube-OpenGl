@@ -24,8 +24,8 @@ vec3 camera;
 vec3 center(0, 0, 0);
 vec3 up_vector(0, 1, 0);
 
-vec3 lightPos(1.2f, 1.0f, 2.0f);
-vec3 Normal(-1,0,0);
+vec3 lightPos(1.0f, 1.0f, 1.0f);
+//vec3 Normal(-1,0,0);
 
 
 //vertext shader is in chanrge of moving points
@@ -35,20 +35,20 @@ const char * vshader_square = """\
       out vec3 Normal;\
       out vec3 FragPos;\
       uniform mat4 mvp;\
-        uniform mat4 model;\
-        uniform mat4 view;\
-      in vec3 vpoint; \
-      in vec3 normal;\
+      uniform mat4 model;\
+      uniform mat4 view;\
+      in vec3 vpoint;\
+      in vec3 normals;\
       \
       void main() {\
         gl_Position = mvp*vec4(vpoint,1);\
-        FragPos = vec3(model * vec4(vpoint, 1.0f));\
-        Normal = normal;\
+        FragPos = vpoint;\
+        Normal = normals;\
       }""";
 
       const char * fshader_square = "\
 #version 330 core \n\
-      out vec3 color;\
+      out vec4 color;\
       in vec3 Normal; \
       in vec3 FragPos;\
       uniform vec3 lightPos;\
@@ -60,7 +60,8 @@ const char * vshader_square = """\
         vec3 lightDir = normalize(lightPos - FragPos);\
         float diff = max(dot(norm, lightDir), 0.0);\
         vec3 diffuse = diff * lightColor;\
-        color = vec3(1.0f, 0.5f, 0.31f); }";
+        vec3 result = (ambient+diffuse)*objectColor;\
+        color =vec4(result, 1.0f); }";
 
       const GLfloat vpoint [] =
 {
@@ -205,7 +206,7 @@ void InitializeGL()
   GLuint normalbuffer;
   glGenBuffers(1, &normalbuffer);
   glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(normals), &normals[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
 
   // 3rd attribute buffer : normals
   glEnableVertexAttribArray(2);
