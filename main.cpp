@@ -64,47 +64,92 @@ const char * vshader_square = """\
 
       const GLfloat vpoint [] =
 {
-  -0.5,-0.5,-0.5, // triangle 1 : begin
-  -0.5,-0.5, 0.5,
-  -0.5, 0.5, 0.5, // triangle 1 : end
-  0.5, 0.5,-0.5, // triangle 2 : begin
-  -0.5,-0.5,-0.5,
-  -0.5, 0.5,-0.5, // triangle 2 : end
-  0.5,-0.5, 0.5,
-  -0.5,-0.5,-0.5,
-  0.5,-0.5,-0.5,
-  0.5, 0.5,-0.5,
-  0.5,-0.5,-0.5,
-  -0.5,-0.5,-0.5,
-  -0.5,-0.5,-0.5,
-  -0.5, 0.5, 0.5,
-  -0.5, 0.5,-0.5,
-  0.5,-0.5, 0.5,
-  -0.5,-0.5, 0.5,
-  -0.5,-0.5,-0.5,
-  -0.5, 0.5, 0.5,
-  -0.5,-0.5, 0.5,
-  0.5,-0.5, 0.5,
-  0.5, 0.5, 0.5,
-  0.5,-0.5,-0.5,
-  0.5, 0.5,-0.5,
-  0.5,-0.5,-0.5,
-  0.5, 0.5, 0.5,
-  0.5,-0.5, 0.5,
-  0.5, 0.5, 0.5,
-  0.5, 0.5,-0.5,
-  -0.5, 0.5,-0.5,
-  0.5, 0.5, 0.5,
-  -0.5, 0.5,-0.5,
-  -0.5, 0.5, 0.5,
-  0.5, 0.5, 0.5,
-  -0.5, 0.5, 0.5,
-  0.5,-0.5, 0.5
+  -0.5f, -0.5f, -0.5f,
+  0.5f, -0.5f, -0.5f,
+  0.5f,  0.5f, -0.5f,
+  0.5f,  0.5f, -0.5f,
+  -0.5f,  0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+
+  -0.5f, -0.5f,  0.5f,
+  0.5f, -0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  -0.5f,  0.5f,  0.5f,
+  -0.5f, -0.5f,  0.5f,
+
+  -0.5f,  0.5f,  0.5f,
+  -0.5f,  0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f,  0.5f,
+  -0.5f,  0.5f,  0.5f,
+
+  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f, -0.5f,
+  0.5f, -0.5f, -0.5f,
+  0.5f, -0.5f, -0.5f,
+  0.5f, -0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+
+  -0.5f, -0.5f, -0.5f,
+  0.5f, -0.5f, -0.5f,
+  0.5f, -0.5f,  0.5f,
+  0.5f, -0.5f,  0.5f,
+  -0.5f, -0.5f,  0.5f,
+  -0.5f, -0.5f, -0.5f,
+
+  -0.5f,  0.5f, -0.5f,
+  0.5f,  0.5f, -0.5f,
+  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  -0.5f,  0.5f,  0.5f,
+  -0.5f,  0.5f, -0.5f,
 };
 
 const GLfloat normals [] =
 {
-    0,0,0,0,0,0
+  0.0f,  0.0f, -1.0f,
+  0.0f,  0.0f, -1.0f,
+  0.0f,  0.0f, -1.0f,
+  0.0f,  0.0f, -1.0f,
+  0.0f,  0.0f, -1.0f,
+  0.0f,  0.0f, -1.0f,
+
+  0.0f,  0.0f, 1.0f,
+  0.0f,  0.0f, 1.0f,
+  0.0f,  0.0f, 1.0f,
+  0.0f,  0.0f, 1.0f,
+  0.0f,  0.0f, 1.0f,
+  0.0f,  0.0f, 1.0f,
+
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+  -1.0f,  0.0f,  0.0f,
+
+  1.0f,  0.0f,  0.0f,
+  1.0f,  0.0f,  0.0f,
+  1.0f,  0.0f,  0.0f,
+  1.0f,  0.0f,  0.0f,
+  1.0f,  0.0f,  0.0f,
+  1.0f,  0.0f,  0.0f,
+
+  0.0f, -1.0f,  0.0f,
+  0.0f, -1.0f,  0.0f,
+  0.0f, -1.0f,  0.0f,
+  0.0f, -1.0f,  0.0f,
+  0.0f, -1.0f,  0.0f,
+  0.0f, -1.0f,  0.0f,
+
+  0.0f,  1.0f,  0.0f,
+  0.0f,  1.0f,  0.0f,
+  0.0f,  1.0f,  0.0f,
+  0.0f,  1.0f,  0.0f,
+  0.0f,  1.0f,  0.0f,
+  0.0f,  1.0f,  0.0f
 };
 
 GLuint VertexArrayID = 0;
@@ -163,54 +208,54 @@ void InitializeGL()
   glBufferData(GL_ARRAY_BUFFER, sizeof(normals), &normals[0], GL_STATIC_DRAW);
 
   // 3rd attribute buffer : normals
-   glEnableVertexAttribArray(2);
-   glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-   glVertexAttribPointer(
-         2,                                // attribute
-         3,                                // size
-         GL_FLOAT,                         // type
-         GL_FALSE,                         // normalized?
-         0,                                // stride
-        (void*)0                          // array buffer offset
-    );
+  glEnableVertexAttribArray(2);
+  glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+  glVertexAttribPointer(
+      2,                                // attribute
+      3,                                // size
+      GL_FLOAT,                         // type
+      GL_FALSE,                         // normalized?
+      0,                                // stride
+      (void*)0                          // array buffer offset
+      );
 
 }
 
 void MouseMove(double x, double y)
 {
-    if (leftButtonPressed == true) {
-      //check in which direction the mouse is moving
-      float x_diff = x-mouse_pos_x;
-      float y_diff = y-mouse_pos_y;
+  if (leftButtonPressed == true) {
+    //check in which direction the mouse is moving
+    float x_diff = x-mouse_pos_x;
+    float y_diff = y-mouse_pos_y;
 
-      horizontal_angle += mouse_speed * x_diff;
-      vertical_angle += mouse_speed * y_diff;
-    }
-    else if (rightButtonPressed == true) {
-      float y_diff = y-mouse_pos_y;
-      radius += y_diff*mouse_speed;
-    }
+    horizontal_angle += mouse_speed * x_diff;
+    vertical_angle += mouse_speed * y_diff;
+  }
+  else if (rightButtonPressed == true) {
+    float y_diff = y-mouse_pos_y;
+    radius += y_diff*mouse_speed;
+  }
 
-    //update current mouse position
-    mouse_pos_x = x;
-    mouse_pos_y = y;
+  //update current mouse position
+  mouse_pos_x = x;
+  mouse_pos_y = y;
 
 }
 
 void MouseButton(MouseButtons mouseButton, bool press)
 {
-    //check for the left button
-    if (mouseButton == LeftButton)
-    {
-      if (press == true) leftButtonPressed = true;
-      else leftButtonPressed = false;
-    }
-    //check for right button
-    if (mouseButton == RightButton)
-    {
-      if (press == true) rightButtonPressed = true;
-      else rightButtonPressed = false;
-    }
+  //check for the left button
+  if (mouseButton == LeftButton)
+  {
+    if (press == true) leftButtonPressed = true;
+    else leftButtonPressed = false;
+  }
+  //check for right button
+  if (mouseButton == RightButton)
+  {
+    if (press == true) rightButtonPressed = true;
+    else rightButtonPressed = false;
+  }
 
 }
 
