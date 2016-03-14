@@ -25,6 +25,7 @@ vec3 center(0, 0, 0);
 vec3 up_vector(0, 1, 0);
 
 vec3 lightPos(1.2f, 1.0f, 2.0f);
+vec3 Normal(-1,0,0);
 
 
 //vertext shader is in chanrge of moving points
@@ -138,6 +139,7 @@ void InitializeGL()
   modelLoc = glGetUniformLocation(ProgramID, "model");
   viewLoc  = glGetUniformLocation(ProgramID,  "view");
 
+  //lightning
   GLuint lightVAO;
   glGenVertexArrays(1, &lightVAO);
   glBindVertexArray(lightVAO);
@@ -158,7 +160,7 @@ void InitializeGL()
   GLuint normalbuffer;
   glGenBuffers(1, &normalbuffer);
   glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-  //glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(normals), &normals[0], GL_STATIC_DRAW);
 
   // 3rd attribute buffer : normals
    glEnableVertexAttribArray(2);
