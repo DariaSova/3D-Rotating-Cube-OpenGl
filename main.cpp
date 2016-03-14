@@ -24,9 +24,11 @@ vec3 camera;
 vec3 center(0, 0, 0);
 vec3 up_vector(0, 1, 0);
 
+vec3 lightPos(1.2f, 1.0f, 2.0f);
+
+
 //vertext shader is in chanrge of moving points
 //fragment shader - pixel color
-
 const char * vshader_square = """\
 #version 330 core \n\
       uniform mat4 mvp;\
@@ -39,7 +41,11 @@ const char * vshader_square = """\
       const char * fshader_square = "\
 #version 330 core \n\
       out vec3 color;\
-      void main() {color = vec3(1,0,0); }";
+      uniform vec3 objectColor;\
+      uniform vec3 lightColor;\
+      void main() { float ambientStrength = 0.1f;\
+        vec3 ambient = ambientStrength * lightColor;\
+        color = ambient*objectColor; }";
 
       const GLfloat vpoint [] =
 {
@@ -106,6 +112,20 @@ void InitializeGL()
   glVertexAttribPointer(vpoint_id,3, GL_FLOAT, false, 0,0);
   MatrixID = glGetUniformLocation(ProgramID, "mvp");
   RotBindingID = glGetUniformLocation(ProgramID, "rotation");
+
+  GLuint lightVAO;
+  glGenVertexArrays(1, &lightVAO);
+  glBindVertexArray(lightVAO);
+  // We only need to bind to the VBO, the container's VBO's data already contains the correct data.
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);  /////
+  // Set the vertex attributes (only position data for our lamp)
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+  glEnableVertexAttribArray(0);
+  glBindVertexArray(0);
+  GLint objectColorLoc = glGetUniformLocation(ProgramID, "objectColor");
+  GLint lightColorLoc  = glGetUniformLocation(ProgramID, "lightColor");
+  glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
+  glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f); // Also set light's color (white)
 
 }
 
@@ -193,4 +213,6 @@ int main(int, char **){
 
   return 0;
 }
+
+
 
