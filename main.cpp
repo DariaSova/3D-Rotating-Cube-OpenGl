@@ -24,7 +24,7 @@ vec3 camera;
 vec3 center(0, 0, 0);
 vec3 up_vector(0, 1, 0);
 
-vec3 lightPos(1.0f, 1.0f, 1.0f);
+vec3 lightPos(2.0f, 2.0f, 2.0f);
 //vec3 Normal(-1,0,0);
 
 
@@ -65,64 +65,71 @@ const char * vshader_square = """\
 
       const GLfloat vpoint [] =
 {
-  -0.5f, -0.5f, -0.5f,
-  0.5f, -0.5f, -0.5f,
-  0.5f,  0.5f, -0.5f,
-  0.5f,  0.5f, -0.5f,
-  -0.5f,  0.5f, -0.5f,
-  -0.5f, -0.5f, -0.5f,
 
-  -0.5f, -0.5f,  0.5f,
-  0.5f, -0.5f,  0.5f,
-  0.5f,  0.5f,  0.5f,
-  0.5f,  0.5f,  0.5f,
-  -0.5f,  0.5f,  0.5f,
-  -0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f, //front face
+        0.5f, -0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,
+        0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
 
-  -0.5f,  0.5f,  0.5f,
-  -0.5f,  0.5f, -0.5f,
-  -0.5f, -0.5f, -0.5f,
-  -0.5f, -0.5f, -0.5f,
-  -0.5f, -0.5f,  0.5f,
-  -0.5f,  0.5f,  0.5f,
-
-  0.5f,  0.5f,  0.5f,
-  0.5f,  0.5f, -0.5f,
-  0.5f, -0.5f, -0.5f,
-  0.5f, -0.5f, -0.5f,
-  0.5f, -0.5f,  0.5f,
-  0.5f,  0.5f,  0.5f,
-
-  -0.5f, -0.5f, -0.5f,
-  0.5f, -0.5f, -0.5f,
-  0.5f, -0.5f,  0.5f,
-  0.5f, -0.5f,  0.5f,
-  -0.5f, -0.5f,  0.5f,
-  -0.5f, -0.5f, -0.5f,
-
+  -0.5f, -0.5f, -0.5f, //back face
   -0.5f,  0.5f, -0.5f,
   0.5f,  0.5f, -0.5f,
-  0.5f,  0.5f,  0.5f,
-  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f, -0.5f,
+  0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+
+
   -0.5f,  0.5f,  0.5f,
   -0.5f,  0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f,  0.5f,
+  -0.5f,  0.5f,  0.5f,
+
+  0.5f,  0.5f,  0.5f,
+  0.5f, -0.5f,  0.5f,
+  0.5f, -0.5f, -0.5f,
+  0.5f, -0.5f, -0.5f,
+  0.5f,  0.5f, -0.5f,
+  0.5f,  0.5f,  0.5f,
+
+  -0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f,  0.5f,
+  0.5f, -0.5f,  0.5f,
+  0.5f, -0.5f,  0.5f,
+   0.5f, -0.5f, -0.5f,
+  -0.5f, -0.5f, -0.5f,
+
+
+  -0.5f,  0.5f, -0.5f,
+  -0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f, -0.5f,
+  -0.5f,  0.5f, -0.5f,
+
 };
+
 
 const GLfloat normals [] =
 {
-  0.0f,  0.0f, -1.0f,
+    0.0f,  0.0f, 1.0f, //front face
+    0.0f,  0.0f, 1.0f,
+    0.0f,  0.0f, 1.0f,
+    0.0f,  0.0f, 1.0f,
+    0.0f,  0.0f, 1.0f,
+    0.0f,  0.0f, 1.0f,
+
+  0.0f,  0.0f, -1.0f, //back face
   0.0f,  0.0f, -1.0f,
   0.0f,  0.0f, -1.0f,
   0.0f,  0.0f, -1.0f,
   0.0f,  0.0f, -1.0f,
   0.0f,  0.0f, -1.0f,
 
-  0.0f,  0.0f, 1.0f,
-  0.0f,  0.0f, 1.0f,
-  0.0f,  0.0f, 1.0f,
-  0.0f,  0.0f, 1.0f,
-  0.0f,  0.0f, 1.0f,
-  0.0f,  0.0f, 1.0f,
+
 
   -1.0f,  0.0f,  0.0f,
   -1.0f,  0.0f,  0.0f,
@@ -185,16 +192,27 @@ void InitializeGL()
   modelLoc = glGetUniformLocation(ProgramID, "model");
   viewLoc  = glGetUniformLocation(ProgramID,  "view");
 
+  //normals buffer
+  GLuint normalbuffer;
+  glGenBuffers(1, &normalbuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+  GLuint normals_id = glGetAttribLocation(ProgramID, "normals");
+  fprintf(stderr, "normals_id=%d", normals_id);
+  glEnableVertexAttribArray(normals_id);
+  glVertexAttribPointer(normals_id,3, GL_FLOAT, false, 0,0);
+
+
   //lightning
-  GLuint lightVAO;
-  glGenVertexArrays(1, &lightVAO);
-  glBindVertexArray(lightVAO);
+  //GLuint lightVAO;
+  //glGenVertexArrays(1, &lightVAO);
+  //glBindVertexArray(lightVAO);
   // We only need to bind to the VBO, the container's VBO's data already contains the correct data.
-  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);  /////
+  //glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);  /////
   // Set the vertex attributes (only position data for our lamp)
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-  glEnableVertexAttribArray(0);
-  glBindVertexArray(0);
+  //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+  //glEnableVertexAttribArray(0);
+  //glBindVertexArray(0);
   GLint objectColorLoc = glGetUniformLocation(ProgramID, "objectColor");
   GLint lightColorLoc  = glGetUniformLocation(ProgramID, "lightColor");
   glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
@@ -202,23 +220,19 @@ void InitializeGL()
   GLint lightPosLoc = glGetUniformLocation(ProgramID, "lightPos");
   glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
 
-  //normals buffer
-  GLuint normalbuffer;
-  glGenBuffers(1, &normalbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(normals), normals, GL_STATIC_DRAW);
+ glEnable(GL_DEPTH_TEST);
 
   // 3rd attribute buffer : normals
-  glEnableVertexAttribArray(2);
-  glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-  glVertexAttribPointer(
+  //glEnableVertexAttribArray(2);
+  //glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+  /*glVertexAttribPointer(
       2,                                // attribute
       3,                                // size
       GL_FLOAT,                         // type
       GL_FALSE,                         // normalized?
       0,                                // stride
       (void*)0                          // array buffer offset
-      );
+      );*/
 
 }
 
@@ -262,7 +276,7 @@ void MouseButton(MouseButtons mouseButton, bool press)
 
 void OnPaint()
 {
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   //contex
   glUseProgram(ProgramID);
   glBindVertexArray(VertexArrayID);
@@ -287,7 +301,9 @@ void OnPaint()
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &View[0][0]);
 
   //draw
-  glDrawArrays(GL_TRIANGLES, 0, 45);
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
   //clean up
   glUseProgram(0);
   glBindVertexArray(0);
