@@ -54,13 +54,19 @@ const char * vshader_square = """\
       uniform vec3 lightPos;\
       uniform vec3 objectColor;\
       uniform vec3 lightColor;\
+      uniform vec3 viewPos;\
       void main() { float ambientStrength = 0.1f;\
+        float specularStrength = 0.5f;\
         vec3 ambient = ambientStrength * lightColor;\
         vec3 norm = normalize(Normal);\
         vec3 lightDir = normalize(lightPos - FragPos);\
         float diff = max(dot(norm, lightDir), 0.0);\
         vec3 diffuse = diff * lightColor;\
-        vec3 result = (ambient+diffuse)*objectColor;\
+                                        vec3 viewDir = normalize(viewPos - FragPos);\
+                                        vec3 reflectDir = reflect(-lightDir, norm);\
+                                        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);\
+                                        vec3 specular = specularStrength * spec * lightColor;\
+        vec3 result = (ambient+diffuse+specular)*objectColor;\
         color =vec4(result, 1.0f); }";
 
       const GLfloat vpoint [] =
@@ -215,6 +221,9 @@ void InitializeGL()
   //glBindVertexArray(0);
   GLint objectColorLoc = glGetUniformLocation(ProgramID, "objectColor");
   GLint lightColorLoc  = glGetUniformLocation(ProgramID, "lightColor");
+  GLint viewPosLoc = glGetUniformLocation(ProgramID, "viewPos");
+  glUniform3f(viewPosLoc, 1.5f, -0.5f, -0.9f);
+  //glUniform3f(viewPosLoc, camera.x, camera.y, camera.z);
   glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
   glUniform3f(lightColorLoc,  1.0f, 1.0f, 1.0f); // Also set light's color (white)
   GLint lightPosLoc = glGetUniformLocation(ProgramID, "lightPos");
