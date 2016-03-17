@@ -55,29 +55,29 @@ const char * vshader_square = """\
       uniform vec3 objectColor;\
       uniform vec3 lightColor;\
       uniform vec3 viewPos;\
-      void main() { float ambientStrength = 0.1f;\
-        float specularStrength = 0.5f;\
+      void main() { \
+        float ambientStrength = 0.1f;\
         vec3 ambient = ambientStrength * lightColor;\
         vec3 norm = normalize(Normal);\
         vec3 lightDir = normalize(lightPos - FragPos);\
         float diff = max(dot(norm, lightDir), 0.0);\
         vec3 diffuse = diff * lightColor;\
-                                        vec3 viewDir = normalize(viewPos - FragPos);\
-                                        vec3 reflectDir = reflect(-lightDir, norm);\
-                                        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);\
-                                        vec3 specular = specularStrength * spec * lightColor;\
+        vec3 eye_dir = normalize(viewPos-FragPos);\
+        vec3 H = normalize(lightDir+eye_dir);\
+        float specular_intensity = pow(max(dot(norm, H), 0.0), 16);\
+        vec3 specular = specular_intensity * lightColor;\
         vec3 result = (ambient+diffuse+specular)*objectColor;\
         color =vec4(result, 1.0f); }";
 
       const GLfloat vpoint [] =
 {
 
-        -0.5f, -0.5f,  0.5f, //front face
-        0.5f, -0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
+  -0.5f, -0.5f,  0.5f, //front face
+  0.5f, -0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  0.5f,  0.5f,  0.5f,
+  -0.5f,  0.5f,  0.5f,
+  -0.5f, -0.5f,  0.5f,
 
   -0.5f, -0.5f, -0.5f, //back face
   -0.5f,  0.5f, -0.5f,
